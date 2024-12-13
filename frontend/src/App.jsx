@@ -14,11 +14,17 @@ function App() {
               )
           )
       } 
+
+      const updateTask = (updatedTask) => {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+        );
+      };
   
 
   return (
     < >
-      <KanbanBoard tasks={tasks} updateDescription={updateDescription}/>
+      <KanbanBoard tasks={tasks} updateDescription={updateDescription} updateTask={updateTask}/>
     </>
   )
 }
