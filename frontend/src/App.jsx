@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import KanbanBoard from './components/KanbanBoard';
 import { tasks as initialTasks } from './utils/data';
+import Sidebar from './components/SideBar';
 
 function App() {
   const [tasks, setTasks] = useState(() => {
@@ -40,11 +41,31 @@ const deleteTask = (id) => {
     prevTasks.filter((task) => task.id !== id)
   );
 };
+const handleAddProject = () => {
+  
+  console.log('Add Project clicked');
+};
+
+const handleFilterTasks = () => {
+  
+  console.log('Filter Tasks clicked');
+};
+
+const handleSettings = () => {
+  
+  console.log('Settings clicked');
+};
 
 
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+return (
+  <div className="min-h-screen bg-gray-50 flex">
+    <Sidebar 
+      onAddProject={handleAddProject}
+      onFilterTasks={handleFilterTasks}
+      onSettings={handleSettings}
+    />
+    <div className="ml-16 md:ml-64 flex-grow">
       <header className="bg-gray-900 text-white p-4 text-center">
         <h1 className="text-3xl font-bold">Kanban Board</h1>
       </header>
@@ -56,7 +77,8 @@ const deleteTask = (id) => {
         deleteTask={deleteTask}
       />
     </div>
-  );
+  </div>
+);
 }
 
 export default App;
