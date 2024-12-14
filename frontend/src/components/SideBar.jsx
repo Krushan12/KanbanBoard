@@ -13,10 +13,10 @@ import InitialLogo from './InitialLogo';
 export default function SideBar({ 
   onAddProject, 
   onFilterTasks, 
-  onSettings 
+  onSettings, 
+  isExpanded, 
+  toggleSidebar 
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
-
   const sidebarItems = [
     { 
       icon: <PlusIcon className="w-5 h-5" />, 
@@ -39,10 +39,6 @@ export default function SideBar({
       action: onSettings 
     }
   ];
-
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   return (
     <div 
@@ -86,7 +82,7 @@ export default function SideBar({
         <img 
           src={LogoIcon} 
           alt="Logo" 
-          className="w-8 h- rounded-full mr-3" 
+          className="w-8 h-8 rounded-full mr-3" 
         />
         {isExpanded && (
           <h2 className="text-xl font-bold">Kanban</h2>
@@ -119,14 +115,14 @@ export default function SideBar({
 
       {/* User/Account Section */}
       <div className="p-4 border-t border-gray-700">
-        <div className="flex items-center ">
-            <InitialLogo 
+        <div className="flex items-center">
+          <InitialLogo 
             name="Jane Smith"  // Custom name
             size={32}          // Custom size
             className="border"  // Additional classes
-            />
+          />
           {isExpanded && (
-            <div className='ml-2'>
+            <div className="ml-2">
               <p className="font-semibold">John Doe</p>
               <p className="text-xs text-gray-400">Admin</p>
             </div>

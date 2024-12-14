@@ -5,12 +5,10 @@ import Sidebar from './components/SideBar';
 
 function App() {
   const [tasks, setTasks] = useState(() => {
-    
     const savedTasks = localStorage.getItem('kanbanTasks');
     return savedTasks ? JSON.parse(savedTasks) : initialTasks;
   });
-      
-  
+
   useEffect(() => {
     localStorage.setItem('kanbanTasks', JSON.stringify(tasks));
   }, [tasks]);
@@ -35,50 +33,56 @@ function App() {
     setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
- 
-const deleteTask = (id) => {
-  setTasks((prevTasks) => 
-    prevTasks.filter((task) => task.id !== id)
-  );
-};
-const handleAddProject = () => {
-  
-  console.log('Add Project clicked');
-};
+  const deleteTask = (id) => {
+    setTasks((prevTasks) => 
+      prevTasks.filter((task) => task.id !== id)
+    );
+  };
 
-const handleFilterTasks = () => {
-  
-  console.log('Filter Tasks clicked');
-};
+  const handleAddProject = () => {
+    console.log('Add Project clicked');
+  };
 
-const handleSettings = () => {
-  
-  console.log('Settings clicked');
-};
+  const handleFilterTasks = () => {
+    console.log('Filter Tasks clicked');
+  };
 
+  const handleSettings = () => {
+    console.log('Settings clicked');
+  };
 
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-return (
-  <div className="min-h-screen bg-gray-50 flex">
-    <Sidebar 
-      onAddProject={handleAddProject}
-      onFilterTasks={handleFilterTasks}
-      onSettings={handleSettings}
-    />
-    <div className="ml-16 md:ml-64 flex-grow">
-      <header className="bg-gray-900 text-white p-4 text-center">
-        <h1 className="text-3xl font-bold">Kanban Board</h1>
-      </header>
-      <KanbanBoard 
-        tasks={tasks} 
-        updateDescription={updateDescription} 
-        updateTask={updateTask}
-        addTask={addTask}
-        deleteTask={deleteTask}
+  return (
+    <div className="flex">
+      {/* Sidebar */}
+      <Sidebar 
+        onAddProject={handleAddProject}
+        onFilterTasks={handleFilterTasks}
+        onSettings={handleSettings}
+        isExpanded={isSidebarExpanded}
+        toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
       />
+      
+      {/* Main Content */}
+      <div 
+        className={`flex-grow transition-all duration-300 ${
+          isSidebarExpanded ? 'ml-64' : 'ml-16'
+        }`}
+      >
+        <header className="bg-gray-900 text-white p-4 text-center">
+          <h1 className="text-3xl font-bold">Kanban Board</h1>
+        </header>
+        <KanbanBoard 
+          tasks={tasks} 
+          updateDescription={updateDescription} 
+          updateTask={updateTask}
+          addTask={addTask}
+          deleteTask={deleteTask}
+        />
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default App;
