@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import TaskComponent from "./Task";
 
 export default function Column({ title, tasks, updateDescription, updateTask, addTask, deleteTask }) {
-    const filteredTasks = tasks.filter((task) => task.status === title);
-
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [newTask, setNewTask] = useState({
         title: "",
         description: "",
-        priority: "Medium",
+        priority: title.replace(" Priority", ""), // Set priority based on column title
         assignee: "",
-        dueDate: ""
+        dueDate: "",
+        status: "To-Do" // Default status when creating a new task
     });
 
     const handleDrop = (e) => {
@@ -38,18 +37,18 @@ export default function Column({ title, tasks, updateDescription, updateTask, ad
         const taskToAdd = {
             id: Date.now(),
             ...newTask,
-            status: title
+            status: "To-Do" // Always set to To-Do when creating a new task
         };
 
         addTask(taskToAdd);
         
-        
         setNewTask({
             title: "",
             description: "",
-            priority: "Medium",
+            priority: title.replace(" Priority", ""),
             assignee: "",
-            dueDate: ""
+            dueDate: "",
+            status: "To-Do"
         });
         setIsFormVisible(false);
     };
@@ -129,7 +128,7 @@ export default function Column({ title, tasks, updateDescription, updateTask, ad
                 </div>
             )}
 
-            {filteredTasks.map((task) => (
+            {tasks.map((task) => (
                 <TaskComponent 
                     key={task.id} 
                     task={task} 

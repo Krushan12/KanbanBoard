@@ -11,6 +11,9 @@ function App() {
   });
 
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
+  // New state to manage filtering mode
+  const [isFilterMode, setIsFilterMode] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('kanbanTasks', JSON.stringify(tasks));
@@ -43,7 +46,6 @@ function App() {
   };
 
   const addProject = (newProject) => {
-    // Convert project to a task
     const projectTask = {
       id: newProject.id,
       title: newProject.title,
@@ -52,13 +54,10 @@ function App() {
       status: newProject.status,
       assignee: "Unassigned",
       dueDate: newProject.endDate,
-      isProject: true  // Add a flag to distinguish projects from regular tasks
+      isProject: true
     };
 
-    // Add the project as a task
     addTask(projectTask);
-    
-    // Close the modal
     setIsProjectModalOpen(false);
   };
 
@@ -66,8 +65,9 @@ function App() {
     setIsProjectModalOpen(true);
   };
 
+  // New handler for filtering tasks
   const handleFilterTasks = () => {
-    console.log('Filter Tasks clicked');
+    setIsFilterMode(!isFilterMode);
   };
 
   const handleSettings = () => {
@@ -92,6 +92,7 @@ function App() {
         onSettings={handleSettings}
         isExpanded={isSidebarExpanded}
         toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
+        isFilterMode={isFilterMode}
       />
       
       {/* Main Content */}
@@ -101,7 +102,9 @@ function App() {
         }`}
       >
         <header className="bg-gray-900 text-white p-4 text-center">
-          <h1 className="text-3xl font-bold">Kanban Board</h1>
+          <h1 className="text-3xl font-bold">
+            {isFilterMode ? 'Priority Filter' : 'Kanban Board'}
+          </h1>
         </header>
         <KanbanBoard 
           tasks={tasks} 
@@ -109,6 +112,7 @@ function App() {
           updateTask={updateTask}
           addTask={addTask}
           deleteTask={deleteTask}
+          filterMode={isFilterMode}
         />
       </div>
     </div>

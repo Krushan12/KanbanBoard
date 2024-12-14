@@ -15,7 +15,8 @@ export default function SideBar({
   onFilterTasks, 
   onSettings, 
   isExpanded, 
-  toggleSidebar 
+  toggleSidebar,
+  isFilterMode 
 }) {
   const sidebarItems = [
     { 
@@ -24,7 +25,7 @@ export default function SideBar({
       action: onAddProject 
     },
     { 
-      icon: <FilterIcon className="w-5 h-5" />, 
+      icon: <FilterIcon className={`w-5 h-5 ${isFilterMode ? 'text-green-500' : ''}`} />, 
       label: 'Filter Tasks', 
       action: onFilterTasks 
     },
@@ -95,7 +96,7 @@ export default function SideBar({
           <button 
             key={index}
             onClick={item.action}
-            className="
+            className={`
               w-full 
               flex 
               items-center 
@@ -103,7 +104,8 @@ export default function SideBar({
               hover:bg-gray-800 
               transition-colors
               focus:outline-none
-            "
+              ${item.label === 'Filter Tasks' && isFilterMode ? 'bg-gray-700' : ''}
+            `}
           >
             <div className="mx-4">{item.icon}</div>
             {isExpanded && (
