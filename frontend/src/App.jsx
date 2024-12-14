@@ -34,6 +34,15 @@ function App() {
     setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
+ 
+const deleteTask = (id) => {
+  setTasks((prevTasks) => 
+    prevTasks.filter((task) => task.id !== id)
+  );
+};
+
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-gray-900 text-white p-4 text-center">
@@ -44,6 +53,7 @@ function App() {
         updateDescription={updateDescription} 
         updateTask={updateTask}
         addTask={addTask}
+        deleteTask={deleteTask}
       />
     </div>
   );

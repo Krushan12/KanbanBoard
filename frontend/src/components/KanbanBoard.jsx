@@ -1,7 +1,7 @@
 import React from "react";
 import Column from "./Column";
 
-export default function KanbanBoard({ tasks, updateDescription, updateTask, addTask }) {
+export default function KanbanBoard({ tasks, updateDescription, updateTask, addTask, deleteTask }) {
   return (
     <div className="flex flex-row gap-4 p-4 bg-gray-50 min-h-screen">
       <Column 
@@ -10,6 +10,7 @@ export default function KanbanBoard({ tasks, updateDescription, updateTask, addT
         updateDescription={updateDescription} 
         updateTask={updateTask} 
         addTask={addTask}
+        deleteTask={deleteTask}
       />
       <Column 
         title="In Progress" 
@@ -17,6 +18,7 @@ export default function KanbanBoard({ tasks, updateDescription, updateTask, addT
         updateDescription={updateDescription} 
         updateTask={updateTask} 
         addTask={addTask}
+        deleteTask={deleteTask}
       />
       <Column 
         title="Done" 
@@ -24,6 +26,7 @@ export default function KanbanBoard({ tasks, updateDescription, updateTask, addT
         updateDescription={updateDescription} 
         updateTask={updateTask} 
         addTask={addTask} 
+        deleteTask={deleteTask}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import TaskComponent from "./Task";
 
-export default function Column({ title, tasks, updateDescription, updateTask, addTask }) {
+export default function Column({ title, tasks, updateDescription, updateTask, addTask, deleteTask }) {
     const filteredTasks = tasks.filter((task) => task.status === title);
 
     const [isFormVisible, setIsFormVisible] = useState(false);
@@ -22,13 +22,12 @@ export default function Column({ title, tasks, updateDescription, updateTask, ad
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewTask(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const handleInputChange = (e) =>{
+        const {name, value} = e.target;
+        setNewTask((prev)=>({
+            ...prev,[name]:value
+        }))
+    }
 
     const handleAddTask = () => {
         if (!newTask.title.trim()) {
@@ -136,6 +135,7 @@ export default function Column({ title, tasks, updateDescription, updateTask, ad
                     task={task} 
                     updateDescription={updateDescription} 
                     updateTask={updateTask}
+                    deleteTask={deleteTask}
                 />
             ))}
         </div>
