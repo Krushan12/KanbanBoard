@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import KanbanBoard from './components/KanbanBoard';
 import { tasks as initialTasks } from './utils/data';
 import Sidebar from './components/SideBar';
+import AddProjectModal from './components/ProjectModel';
 
 function App() {
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem('kanbanTasks');
     return savedTasks ? JSON.parse(savedTasks) : initialTasks;
   });
+
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('kanbanTasks', JSON.stringify(tasks));
@@ -39,8 +42,28 @@ function App() {
     );
   };
 
+  const addProject = (newProject) => {
+    // Convert project to a task
+    const projectTask = {
+      id: newProject.id,
+      title: newProject.title,
+      description: newProject.description,
+      priority: newProject.priority,
+      status: newProject.status,
+      assignee: "Unassigned",
+      dueDate: newProject.endDate,
+      isProject: true  // Add a flag to distinguish projects from regular tasks
+    };
+
+    // Add the project as a task
+    addTask(projectTask);
+    
+    // Close the modal
+    setIsProjectModalOpen(false);
+  };
+
   const handleAddProject = () => {
-    console.log('Add Project clicked');
+    setIsProjectModalOpen(true);
   };
 
   const handleFilterTasks = () => {
@@ -55,6 +78,13 @@ function App() {
 
   return (
     <div className="flex">
+      {/* Add Project Modal */}
+      <AddProjectModal 
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+        onAddProject={addProject}
+      />
+
       {/* Sidebar */}
       <Sidebar 
         onAddProject={handleAddProject}
