@@ -5,7 +5,7 @@ export default function InitialLogo({
   size = 40, 
   className = '' 
 }) {
-  // Extract initials
+  
   const getInitials = (fullName) => {
     return fullName
       .split(' ')
@@ -15,7 +15,7 @@ export default function InitialLogo({
       .slice(0, 2);
   };
 
-  // Generate a consistent color based on the name
+  
   const generateColor = (name) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {

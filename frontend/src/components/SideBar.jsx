@@ -117,13 +117,13 @@ export default function SideBar({
       <div className="p-4 border-t border-gray-700">
         <div className="flex items-center">
           <InitialLogo 
-            name="Jane Smith"  // Custom name
-            size={32}          // Custom size
-            className="border"  // Additional classes
+            name="Kiteretsu"  
+            size={32}          
+            className="border"  
           />
           {isExpanded && (
             <div className="ml-2">
-              <p className="font-semibold">John Doe</p>
+              <p className="font-semibold">Kiteretsu</p>
               <p className="text-xs text-gray-400">Admin</p>
             </div>
           )}
