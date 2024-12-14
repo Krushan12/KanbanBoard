@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo } from 'react';
 import Column from "./Column";
 
 export default function KanbanBoard({ 
@@ -9,65 +9,41 @@ export default function KanbanBoard({
   deleteTask,
   filterMode = false 
 }) {
-  // If in filter mode, organize tasks by priority while preserving status
-  if (filterMode) {
-    return (
-      <div className="flex flex-row gap-4 p-4 bg-gray-50 min-h-screen">
-        <Column 
-          title="High Priority" 
-          tasks={tasks.filter(task => task.priority === "High")} 
-          updateDescription={updateDescription} 
-          updateTask={updateTask} 
-          addTask={addTask}
-          deleteTask={deleteTask}
-        />
-        <Column 
-          title="Medium Priority" 
-          tasks={tasks.filter(task => task.priority === "Medium")} 
-          updateDescription={updateDescription} 
-          updateTask={updateTask} 
-          addTask={addTask}
-          deleteTask={deleteTask}
-        />
-        <Column 
-          title="Low Priority" 
-          tasks={tasks.filter(task => task.priority === "Low")} 
-          updateDescription={updateDescription} 
-          updateTask={updateTask} 
-          addTask={addTask}
-          deleteTask={deleteTask}
-        />
-      </div>
-    );
-  }
+  // Memoize filtered tasks to prevent unnecessary re-renders
+  const filteredTasks = useMemo(() => {
+    if (filterMode) {
+      return {
+        'High Priority': tasks.filter(task => task.priority === "High"),
+        'Medium Priority': tasks.filter(task => task.priority === "Medium"),
+        'Low Priority': tasks.filter(task => task.priority === "Low")
+      };
+    }
+    
+    return {
+      'To-Do': tasks.filter(task => task.status === "To-Do"),
+      'In Progress': tasks.filter(task => task.status === "In Progress"),
+      'Done': tasks.filter(task => task.status === "Done")
+    };
+  }, [tasks, filterMode]);
 
-  // Default Kanban board view
+  // Titles based on filter mode
+  const columnTitles = filterMode 
+    ? ['High Priority', 'Medium Priority', 'Low Priority']
+    : ['To-Do', 'In Progress', 'Done'];
+
   return (
     <div className="flex flex-row gap-4 p-4 bg-gray-50 min-h-screen">
-      <Column 
-        title="To-Do" 
-        tasks={tasks.filter(task => task.status === "To-Do")} 
-        updateDescription={updateDescription} 
-        updateTask={updateTask} 
-        addTask={addTask}
-        deleteTask={deleteTask}
-      />
-      <Column 
-        title="In Progress" 
-        tasks={tasks.filter(task => task.status === "In Progress")} 
-        updateDescription={updateDescription} 
-        updateTask={updateTask} 
-        addTask={addTask}
-        deleteTask={deleteTask}
-      />
-      <Column 
-        title="Done" 
-        tasks={tasks.filter(task => task.status === "Done")} 
-        updateDescription={updateDescription} 
-        updateTask={updateTask} 
-        addTask={addTask} 
-        deleteTask={deleteTask}
-      />
+      {columnTitles.map((title) => (
+        <Column 
+          key={title}
+          title={title} 
+          tasks={filteredTasks[title] || []} 
+          updateDescription={updateDescription} 
+          updateTask={updateTask} 
+          addTask={addTask}
+          deleteTask={deleteTask}
+        />
+      ))}
     </div>
   );
 }
