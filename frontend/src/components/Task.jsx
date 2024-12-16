@@ -1,25 +1,13 @@
 import React, { useState } from "react";
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
-export default function TaskComponent({ task, updateTask, deleteTask }) {
+export default function TaskComponent({ 
+  task, 
+  updateTask, 
+  deleteTask, 
+  isDragging = false 
+}) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedTask, setEditedTask] = useState({ ...task });
-
-    const { 
-        attributes, 
-        listeners, 
-        setNodeRef, 
-        transform, 
-        transition 
-      } = useSortable({ 
-        id: `task-${task.id}` 
-      });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
 
     const priorityColors = {
         High: "border-red-500",
@@ -57,11 +45,9 @@ export default function TaskComponent({ task, updateTask, deleteTask }) {
 
     return (
         <div 
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-            className={`p-4 bg-white rounded-lg shadow-md m-2 border-l-4 relative group ${priorityColors[task.priority]}`}
+            className={`p-4 bg-white rounded-lg shadow-md m-2 border-l-4 relative group 
+                ${priorityColors[task.priority]} 
+                ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         >
             {/* Delete and Edit Buttons */}
             <div className="absolute top-2 right-2 flex space-x-2">

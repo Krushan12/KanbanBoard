@@ -1,15 +1,15 @@
 import React, { useState, useCallback } from "react";
-import TaskComponent from "./Task";
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableTask } from "./Sortable";
 import { FormInput, FormTextarea, FormSelect } from './FormComponents';
-
 
 export default function Column({ 
   title, 
   tasks, 
-  
   updateTask, 
   addTask, 
-  deleteTask 
+  deleteTask,
+  filterMode = false 
 }) {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [newTask, setNewTask] = useState({
@@ -18,10 +18,8 @@ export default function Column({
     priority: title.replace(" Priority", ""),
     assignee: "",
     dueDate: "",
-    status: title
+    status: filterMode ? title.replace(" Priority", "") : title
   });
-
- 
 
   const priorityOptions = [
     { value: 'Low', label: 'Low Priority' },
@@ -46,7 +44,7 @@ export default function Column({
     const taskToAdd = {
       id: `task-${Date.now()}`,
       ...newTask,
-      status: title
+      status: filterMode ? newTask.priority : title
     };
 
     addTask(taskToAdd);
@@ -57,10 +55,10 @@ export default function Column({
       priority: title.replace(" Priority", ""),
       assignee: "",
       dueDate: "",
-      status: title
+      status: filterMode ? title.replace(" Priority", "") : title
     });
     setIsFormVisible(false);
-  }, [newTask, title, addTask]);
+  }, [newTask, title, addTask, filterMode]);
 
   return (
     <div className="bg-gray-100 rounded-lg p-4 shadow-md w-1/3 min-h-screen">
@@ -131,19 +129,23 @@ export default function Column({
         </div>
       )}
       
-        <div  className="space-y-2">
+      <SortableContext 
+        items={tasks.map(task => task.id)} 
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="space-y-2">
           {tasks.map((task) => (
-            <TaskComponent 
+            <SortableTask 
               key={`task-${task.id}`}
               task={task} 
-               
               updateTask={updateTask}
               deleteTask={deleteTask}
+              filterMode={filterMode}
+              columnTitle={title}
             />
           ))}
         </div>
-      
-    
+      </SortableContext>
     </div>
   );
 }
