@@ -3,13 +3,12 @@ import Column from "./Column";
 
 export default function KanbanBoard({ 
   tasks, 
-  updateDescription, 
+  
   updateTask, 
   addTask, 
   deleteTask,
   filterMode = false 
 }) {
-  // Memoize filtered tasks to prevent unnecessary re-renders
   const filteredTasks = useMemo(() => {
     if (filterMode) {
       return {
@@ -25,7 +24,6 @@ export default function KanbanBoard({
       'Done': tasks.filter(task => task.status === "Done")
     };
   }, [tasks, filterMode]);
-
   // Titles based on filter mode
   const columnTitles = filterMode 
     ? ['High Priority', 'Medium Priority', 'Low Priority']
@@ -38,7 +36,6 @@ export default function KanbanBoard({
           key={title}
           title={title} 
           tasks={filteredTasks[title] || []} 
-          updateDescription={updateDescription} 
           updateTask={updateTask} 
           addTask={addTask}
           deleteTask={deleteTask}

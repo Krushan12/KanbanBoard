@@ -1,20 +1,12 @@
 import React, { useState, useCallback } from "react";
 import TaskComponent from "./Task";
 import { FormInput, FormTextarea, FormSelect } from './FormComponents';
-import { 
-    useDroppable,
-    useDraggable
-  } from '@dnd-kit/core';
-  import { 
-    rectSortingStrategy,
-    SortableContext,
-    verticalListSortingStrategy
-  } from '@dnd-kit/sortable';
+
 
 export default function Column({ 
   title, 
   tasks, 
-  updateDescription, 
+  
   updateTask, 
   addTask, 
   deleteTask 
@@ -29,9 +21,7 @@ export default function Column({
     status: title
   });
 
-  const { setNodeRef } = useDroppable({
-    id: title,
-  });
+ 
 
   const priorityOptions = [
     { value: 'Low', label: 'Low Priority' },
@@ -140,23 +130,19 @@ export default function Column({
           </div>
         </div>
       )}
-      <SortableContext 
-        id={title}
-        items={tasks.map(task => `task-${task.id}`)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div ref={setNodeRef} className="space-y-2">
+      
+        <div  className="space-y-2">
           {tasks.map((task) => (
             <TaskComponent 
-              key={task.id}
+              key={`task-${task.id}`}
               task={task} 
-              updateDescription={updateDescription} 
+               
               updateTask={updateTask}
               deleteTask={deleteTask}
             />
           ))}
         </div>
-      </SortableContext>
+      
     
     </div>
   );

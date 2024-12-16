@@ -12,9 +12,9 @@ export default function TaskComponent({ task, updateTask, deleteTask }) {
         setNodeRef, 
         transform, 
         transition 
-    } = useSortable({ 
+      } = useSortable({ 
         id: `task-${task.id}` 
-    });
+      });
 
     const style = {
         transform: CSS.Transform.toString(transform),
