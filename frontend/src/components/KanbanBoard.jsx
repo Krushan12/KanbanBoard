@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-
+import React, { useState, useMemo, useCallback } from 'react';
 import { 
   DndContext, 
   closestCorners, 
@@ -12,37 +11,40 @@ import {
 import { 
   arrayMove, 
   sortableKeyboardCoordinates, 
-  rectSortingStrategy, 
+  verticalListSortingStrategy, 
   SortableContext 
 } from '@dnd-kit/sortable';
 
 import Column from "./Column";
 import TaskComponent from "./Task";
-import { SortableTask } from "./Sortable";
 
 export default function KanbanBoard({ 
   tasks, 
   updateTask, 
   addTask, 
   deleteTask,
+  reorderTasks,
   filterMode = false 
 }) {
   const [activeTask, setActiveTask] = useState(null);
 
   const filteredTasks = useMemo(() => {
-    if (filterMode) {
-      return {
-        'High Priority': tasks.filter(task => task.priority === "High"),
-        'Medium Priority': tasks.filter(task => task.priority === "Medium"),
-        'Low Priority': tasks.filter(task => task.priority === "Low")
-      };
-    }
+    const groupKey = filterMode ? 'priority' : 'status';
     
-    return {
-      'To-Do': tasks.filter(task => task.status === "To-Do"),
-      'In Progress': tasks.filter(task => task.status === "In Progress"),
-      'Done': tasks.filter(task => task.status === "Done")
-    };
+    // Group tasks by priority or status
+    const groups = tasks.reduce((acc, task) => {
+      const groupTitle = filterMode 
+        ? `${task[groupKey]} Priority`
+        : task[groupKey];
+      
+      if (!acc[groupTitle]) {
+        acc[groupTitle] = [];
+      }
+      acc[groupTitle].push(task);
+      return acc;
+    }, {});
+
+    return groups;
   }, [tasks, filterMode]);
 
   // Titles based on filter mode
@@ -68,41 +70,43 @@ export default function KanbanBoard({
   const handleDragEnd = useCallback((event) => {
     const { active, over } = event;
 
+    if (!active || !over) {
+      setActiveTask(null);
+      return;
+    }
+
+    // Determine column keys based on filter mode
+    const groupKey = filterMode ? 'priority' : 'status';
+    
+    // Get the column titles
+    const activeColumnTitle = over.data.current.columnTitle;
+    const draggedTask = tasks.find(task => task.id === active.id);
+
     // If task is dropped in a different column
     if (active.id !== over.id) {
-      const oldColumnTitle = getColumnTitleForTask(active.id, filteredTasks);
-      const newColumnTitle = over.data.current.columnTitle;
-
-      // Update the task's status or priority based on the column
       const updatedTask = {
-        ...tasks.find(task => task.id === active.id),
+        ...draggedTask,
         ...(filterMode 
-          ? { priority: newColumnTitle.replace(" Priority", "") }
-          : { status: newColumnTitle }
+          ? { priority: activeColumnTitle.replace(" Priority", "") }
+          : { status: activeColumnTitle }
         )
       };
 
-      // Remove task from old column and add to new column
+      // Update the task's status or priority
       updateTask(updatedTask);
+    } else {
+      // If dropped in the same column, reorder tasks
+      const columnTasks = filteredTasks[activeColumnTitle];
+      reorderTasks(columnTasks, active.id, over.id);
     }
 
     setActiveTask(null);
-  }, [tasks, filteredTasks, filterMode, updateTask]);
+  }, [tasks, filteredTasks, filterMode, updateTask, reorderTasks]);
 
   // Handle drag cancel
   const handleDragCancel = useCallback(() => {
     setActiveTask(null);
   }, []);
-
-  // Helper function to get column title for a task
-  const getColumnTitleForTask = (taskId, taskGroups) => {
-    for (const [title, tasksInColumn] of Object.entries(taskGroups)) {
-      if (tasksInColumn.some(task => task.id === taskId)) {
-        return title;
-      }
-    }
-    return null;
-  };
 
   return (
     <DndContext 

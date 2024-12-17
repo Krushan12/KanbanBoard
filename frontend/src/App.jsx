@@ -44,6 +44,28 @@ function App() {
     );
   }, []);
 
+  const reorderTasks = useCallback((columnTasks, activeId, overId) => {
+    const activeIndex = columnTasks.findIndex(task => task.id === activeId);
+    const overIndex = columnTasks.findIndex(task => task.id === overId);
+
+    // If the task is moved to a different position within the same column
+    if (activeIndex !== overIndex) {
+      const reorderedTasks = arrayMove(columnTasks, activeIndex, overIndex);
+      
+      // Update the tasks state by replacing the tasks in the specific column
+      setTasks((prevTasks) => {
+        // Determine which key to use based on filter mode
+        const groupKey = isFilterMode ? 'priority' : 'status';
+        const columnTitle = columnTasks[0][groupKey];
+
+        // Create a new array of tasks with the reordered column
+        return prevTasks.filter(task => 
+          task[groupKey] !== columnTitle
+        ).concat(reorderedTasks);
+      });
+    }
+  }, [isFilterMode]);
+
   
 
   const addProject = useCallback((newProject) => {
@@ -114,6 +136,7 @@ function App() {
             updateTask={updateTask}
             addTask={addTask}
             deleteTask={deleteTask}
+            reorderTasks={reorderTasks}
             filterMode={isFilterMode}
           />
         </div>
