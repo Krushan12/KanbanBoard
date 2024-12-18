@@ -23,7 +23,6 @@ export default function KanbanBoard({
   updateTask, 
   addTask, 
   deleteTask,
-  reorderTasks,
   filterMode = false 
 }) {
   const [activeTask, setActiveTask] = useState(null);
@@ -44,7 +43,15 @@ export default function KanbanBoard({
       return acc;
     }, {});
 
-    return groups;
+    // Ensure consistent order for columns
+    const columnTitles = filterMode 
+      ? ['High Priority', 'Medium Priority', 'Low Priority']
+      : ['To-Do', 'In Progress', 'Done'];
+
+    return columnTitles.reduce((acc, title) => {
+      acc[title] = groups[title] || [];
+      return acc;
+    }, {});
   }, [tasks, filterMode]);
 
   // Titles based on filter mode
@@ -54,7 +61,11 @@ export default function KanbanBoard({
 
   // Sensors for drag and drop
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10, // Allow small movements without triggering drag
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -84,24 +95,44 @@ export default function KanbanBoard({
 
     // If task is dropped in a different column
     if (active.id !== over.id) {
-      const updatedTask = {
-        ...draggedTask,
-        ...(filterMode 
-          ? { priority: activeColumnTitle.replace(" Priority", "") }
-          : { status: activeColumnTitle }
-        )
-      };
+      // Check if task is moved to a different column
+      const currentColumnTitle = columnTitles.find(title => 
+        filteredTasks[title].some(t => t.id === active.id)
+      );
 
-      // Update the task's status or priority
-      updateTask(updatedTask);
-    } else {
-      // If dropped in the same column, reorder tasks
-      const columnTasks = filteredTasks[activeColumnTitle];
-      reorderTasks(columnTasks, active.id, over.id);
+      if (currentColumnTitle !== activeColumnTitle) {
+        // Update task's column
+        const updatedTask = {
+          ...draggedTask,
+          ...(filterMode 
+            ? { priority: activeColumnTitle.replace(" Priority", "") }
+            : { status: activeColumnTitle }
+          )
+        };
+
+        updateTask(updatedTask);
+      } else {
+        // Reorder within the same column
+        const columnTasks = filteredTasks[activeColumnTitle];
+        const activeIndex = columnTasks.findIndex(task => task.id === active.id);
+        const overIndex = columnTasks.findIndex(task => task.id === over.id);
+
+        if (activeIndex !== overIndex) {
+          const reorderedTasks = arrayMove(columnTasks, activeIndex, overIndex);
+          
+          // Update entire tasks array
+          const updatedTasks = tasks.filter(task => 
+            !columnTasks.some(t => t.id === task.id)
+          ).concat(reorderedTasks);
+
+          // Dispatch full task list update
+          updateTask(reorderedTasks[overIndex]);
+        }
+      }
     }
 
     setActiveTask(null);
-  }, [tasks, filteredTasks, filterMode, updateTask, reorderTasks]);
+  }, [tasks, filteredTasks, filterMode, updateTask, columnTitles]);
 
   // Handle drag cancel
   const handleDragCancel = useCallback(() => {

@@ -50,7 +50,7 @@ export default function TaskComponent({
                 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         >
             {/* Delete and Edit Buttons */}
-            <div className="absolute top-2 right-2 flex space-x-2">
+            <div className="absolute top-2 right-2 flex space-x-2 z-10">
                 {/* Edit Button */}
                 <button 
                     onClick={handleEditToggle}

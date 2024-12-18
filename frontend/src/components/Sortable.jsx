@@ -3,7 +3,13 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import TaskComponent from './Task';
 
-export function SortableTask({ task, updateTask, deleteTask, filterMode, columnTitle }) {
+export function SortableTask({ 
+  task, 
+  updateTask, 
+  deleteTask, 
+  filterMode, 
+  columnTitle 
+}) {
   const {
     attributes,
     listeners,
@@ -29,15 +35,19 @@ export function SortableTask({ task, updateTask, deleteTask, filterMode, columnT
     <div 
       ref={setNodeRef} 
       style={style} 
-      {...attributes} 
-      {...listeners}
+      {...attributes}
     >
-      <TaskComponent 
-        task={task} 
-        updateTask={updateTask} 
-        deleteTask={deleteTask}
-        isDragging={isDragging}
-      />
+      <div 
+        {...listeners}
+        className="cursor-move"
+      >
+        <TaskComponent 
+          task={task} 
+          updateTask={updateTask} 
+          deleteTask={deleteTask}
+          isDragging={isDragging}
+        />
+      </div>
     </div>
   );
 }
